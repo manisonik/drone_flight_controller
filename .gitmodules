@@ -1,0 +1,3 @@
+[submodule "ScpiParser"] 
+  path = ScpiParser
+  url = https://github.com/manisonik/scpi-parser.git

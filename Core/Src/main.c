@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.c
+  * @file           : main.cpp
   * @brief          : Main program body
   ******************************************************************************
   * @attention
@@ -22,6 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "scpi/scpi.h"
+#include "dshot/dshot.h"
 
 /* USER CODE END Includes */
 
@@ -32,22 +34,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
-// MOTOR 1 (PA3) - TIM5 Channel 4, DMA1 Stream 3
-#define MOTOR_1_TIM             (&htim5)
-#define MOTOR_1_TIM_CHANNEL     TIM_CHANNEL_4
-
-// MOTOR 2 (PA2) - TIM2 Channel 3, DMA1 Stream 1
-#define MOTOR_2_TIM             (&htim2)
-#define MOTOR_2_TIM_CHANNEL     TIM_CHANNEL_3
-
-// MOTOR 3 (PA0) - TIM2 Channel 1, DMA1 Stream 5
-#define MOTOR_3_TIM             (&htim2)
-#define MOTOR_3_TIM_CHANNEL     TIM_CHANNEL_1
-
-// MOTOR 4 (PA1) - TIM5 Channel 2, DMA1 Stream 4
-#define MOTOR_4_TIM             (&htim5)
-#define MOTOR_4_TIM_CHANNEL     TIM_CHANNEL_2
 
 /* USER CODE END PD */
 
@@ -67,17 +53,7 @@ DMA_HandleTypeDef hdma_tim5_ch4_trig;
 
 /* USER CODE BEGIN PV */
 
-#define DSHOT_DMA_BUFFER_SIZE   18 /* resolution + frame reset (2us) */
-
-#define MOTOR_BIT_0            	7
-#define MOTOR_BIT_1            	14
-#define MOTOR_BITLENGTH        	20
-
-uint32_t motor1_dmabuffer[DSHOT_DMA_BUFFER_SIZE];
-uint32_t motor2_dmabuffer[DSHOT_DMA_BUFFER_SIZE];
-uint32_t motor3_dmabuffer[DSHOT_DMA_BUFFER_SIZE];
-uint32_t motor4_dmabuffer[DSHOT_DMA_BUFFER_SIZE];
-
+// 4 motor value
 uint16_t my_motor_value[4] = {0, 0, 0, 0};
 
 /* USER CODE END PV */
@@ -94,81 +70,6 @@ static void MX_TIM5_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-static uint16_t dshot_prepare_packet(uint16_t value)
-{
-	uint16_t packet;
-	bool dshot_telemetry = false;
-
-	packet = (value << 1) | (dshot_telemetry ? 1 : 0);
-
-	// compute checksum
-	unsigned csum = 0;
-	unsigned csum_data = packet;
-
-	for(int i = 0; i < 3; i++)
-	{
-        csum ^=  csum_data; // xor data by nibbles
-        csum_data >>= 4;
-	}
-
-	csum &= 0xf;
-	packet = (packet << 4) | csum;
-
-	return packet;
-}
-
-void dshot_prepare_dmabuffer(uint32_t* motor_dmabuffer, uint16_t value)
-{
-	uint16_t packet;
-	packet = dshot_prepare_packet(value);
-
-	for(int i = 0; i < 16; i++)
-	{
-		motor_dmabuffer[i] = (packet & 0x8000) ? MOTOR_BIT_1 : MOTOR_BIT_0;
-		packet <<= 1;
-	}
-
-	motor_dmabuffer[16] = 0;
-	motor_dmabuffer[17] = 0;
-}
-
-void dshot_write(uint16_t* motor_value)
-{
-	//dshot_prepare_dmabuffer_all(motor_value);
-	dshot_prepare_dmabuffer(motor3_dmabuffer, motor_value[0]);
-	//dshot_dma_start();
-	HAL_DMA_Start_IT(MOTOR_3_TIM->hdma[TIM_DMA_ID_CC1], (uint32_t)motor3_dmabuffer, (uint32_t)&MOTOR_3_TIM->Instance->CCR1, DSHOT_DMA_BUFFER_SIZE);
-	//dshot_enable_dma_request();
-	__HAL_TIM_ENABLE_DMA(MOTOR_3_TIM, TIM_DMA_CC1);
-}
-
-void dshot_dma_tc_callback(DMA_HandleTypeDef *hdma)
-{
-	TIM_HandleTypeDef *htim = (TIM_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
-
-	if (hdma == htim->hdma[TIM_DMA_ID_CC1])
-	{
-		__HAL_TIM_DISABLE_DMA(htim, TIM_DMA_CC1);
-	}
-	else if(hdma == htim->hdma[TIM_DMA_ID_CC2])
-	{
-		__HAL_TIM_DISABLE_DMA(htim, TIM_DMA_CC2);
-	}
-	else if(hdma == htim->hdma[TIM_DMA_ID_CC3])
-	{
-		__HAL_TIM_DISABLE_DMA(htim, TIM_DMA_CC3);
-	}
-	else if(hdma == htim->hdma[TIM_DMA_ID_CC4])
-	{
-		__HAL_TIM_DISABLE_DMA(htim, TIM_DMA_CC4);
-	}
-}
-
-void dshot_dma_error_callback(DMA_HandleTypeDef *hdma)
-{
-
-}
 
 /* USER CODE END 0 */
 
@@ -205,9 +106,12 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
-  MOTOR_3_TIM->hdma[TIM_DMA_ID_CC1]->XferCpltCallback = &dshot_dma_tc_callback;
+  // initialize
+  //dshot_init(DSHOT600);
+
+  //MOTOR_3_TIM->hdma[TIM_DMA_ID_CC1]->XferCpltCallback = &dshot_dma_tc_callback;
   //MOTOR_3_TIM->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = &dshot_dma_error_callback;
-  HAL_TIM_PWM_Start_IT(MOTOR_3_TIM, MOTOR_3_TIM_CHANNEL);
+  //HAL_TIM_PWM_Start_IT(MOTOR_3_TIM, MOTOR_3_TIM_CHANNEL);
 
   /* USER CODE END 2 */
 
@@ -215,11 +119,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+	  // transmit new dshot signals
+	  //dshot_write(my_motor_value);
+	  HAL_Delay(1);
 
+    /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-	dshot_write(my_motor_value);
-	HAL_Delay(1);
   }
   /* USER CODE END 3 */
 }
@@ -283,7 +188,6 @@ static void MX_TIM2_Init(void)
 {
 
   /* USER CODE BEGIN TIM2_Init 0 */
-	uint32_t clock = SystemCoreClock;
 
   /* USER CODE END TIM2_Init 0 */
 
