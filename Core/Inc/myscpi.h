@@ -22,6 +22,7 @@ extern "C" {
 #define SCPI_IDN4 "01-02"
 
 void MY_SCPI_Init(void);
+void MY_SCPI_Receive(uint8_t* recv, int len);
 
 #ifdef __cplusplus
 }
