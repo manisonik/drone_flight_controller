@@ -16,6 +16,7 @@
 # Build results
 [Dd]ebug/
 [Rr]elease/
+[Ii]nvn/
 
 # Files built by Visual Studio
 *_i.c
@@ -48,8 +49,3 @@
 
 # Libraries
 !zlib/**/
-!libpng/**/
-!glew/**/
-!devil/**/
-!jpeg/**/
-!lcms2/**/

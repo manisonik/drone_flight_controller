@@ -58,7 +58,7 @@ void DShot_Init(DShot_Handle_TypeDef* HandleStruct, DShot_Type_Enum Type)
 			break;
 	}
 
-	HandleStruct->DMABuffer = (uint32_t)malloc(DSHOT_DMA_BUFFER_SIZE + sizeof(uint32_t));
+	HandleStruct->DMABuffer = (uint32_t)calloc(DSHOT_DMA_BUFFER_SIZE, sizeof(uint32_t));
 
 	// Setup the frequency
 	uint32_t freq = 0;
@@ -90,6 +90,24 @@ void DShot_Init(DShot_Handle_TypeDef* HandleStruct, DShot_Type_Enum Type)
 	HAL_TIM_PWM_Start(tim, HandleStruct->Init.TIMChannel);
 }
 
+void DShot_Write_All(DShot_Handle_TypeDef* handle, int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		DShot_Prepare_DMA_Buffer((uint32_t*)handle[i].DMABuffer, handle[i].Value);
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+		HAL_DMA_Start_IT(handle[i].DMAInstance, handle[i].DMABuffer, handle[i].DMACCR, DSHOT_DMA_BUFFER_SIZE);
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+		__HAL_TIM_ENABLE_DMA(handle[i].Init.TIMInstance, handle[i].TIMCCR);
+	}
+}
+
 // __HAL_TIM_DISABLE_DMA is needed to eliminate the delay between different dshot signals
 void DShot_DMA_Callback(DMA_HandleTypeDef *hdma)
 {
@@ -116,7 +134,7 @@ void DShot_DMA_Callback(DMA_HandleTypeDef *hdma)
 void DShot_Write(DShot_Handle_TypeDef* handle, uint16_t value)
 {
 	DShot_Prepare_DMA_Buffer((uint32_t*)handle->DMABuffer, value);
-	HAL_DMA_Start_IT(handle->DMAInstance, handle->DMABuffer, handle->DMACCR, DSHOT_DMA_BUFFER_SIZE);
+	while (HAL_DMA_Start_IT(handle->DMAInstance, handle->DMABuffer, handle->DMACCR, DSHOT_DMA_BUFFER_SIZE) == HAL_BUSY)
 	__HAL_TIM_ENABLE_DMA(handle->Init.TIMInstance, handle->TIMCCR);
 }
 

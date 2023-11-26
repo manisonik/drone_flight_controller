@@ -56,6 +56,8 @@ typedef struct
 void DShot_Init(DShot_Handle_TypeDef* InitStruct, DShot_Type_Enum Type);
 void DShot_Release(DShot_Handle_TypeDef* InitStruct);
 void DShot_Write(DShot_Handle_TypeDef* handle, uint16_t value);
+void DShot_Prepare_DMA_Buffer(uint32_t* buffer, uint16_t value);
+void DShot_Write_All(DShot_Handle_TypeDef* handle, int count);
 
 #ifdef __cplusplus
 }

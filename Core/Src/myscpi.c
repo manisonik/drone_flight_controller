@@ -66,9 +66,6 @@ scpi_result_t SCPI_Rst(scpi_t *context)
 {
 	(void) context;
 
-	const char txData[] = "Hello World!\n";
-	while (CDC_Transmit_FS((uint8_t*)txData, strlen(txData)) == USBD_BUSY);
-
 	return 0;
 }
 
@@ -82,6 +79,9 @@ size_t SCPI_Write(scpi_t *context, const char *data, size_t len)
 scpi_result_t SCPI_Flush(scpi_t *context)
 {
 	(void) context;
+
+	const char txData[] = "Hello World!\n";
+	while (CDC_Transmit_FS((uint8_t*)txData, strlen(txData)) == USBD_BUSY);
 
 	return SCPI_RES_OK;
 }
