@@ -59,6 +59,7 @@
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/ICM20948"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/Ak0991x"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices"/>
+									<listOptionValue builtIn="false" value="../ICP-10101/Inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1176346885" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -180,6 +181,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Dshot"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ICP-10101"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Invn"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ScpiParser/libscpi/src"/>
@@ -243,6 +245,7 @@
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/ICM20948"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/Ak0991x"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices"/>
+									<listOptionValue builtIn="false" value="../ICP-10101/Inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.342526108" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -319,6 +322,7 @@
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/ICM20948"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices/Drivers/Ak0991x"/>
 									<listOptionValue builtIn="false" value="../Invn/Devices"/>
+									<listOptionValue builtIn="false" value="../ICP-10101/Inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1128452454" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -337,8 +341,9 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ICP-10101"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 					</sourceEntries>
 				</configuration>
