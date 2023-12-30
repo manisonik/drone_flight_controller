@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
 #include "i2c.h"
 #include "tim.h"
@@ -27,10 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "myscpi.h"
-#include "sensor.h"
-#include "dshot/dshot.h"
-#include "usbd_cdc_if.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,13 +49,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-DShot_Handle_TypeDef DShot_HandleStruct[4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-void MY_DSHOT_Init(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -94,54 +92,27 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_DMA_Init();
-	MX_USB_DEVICE_Init();
 	MX_TIM3_Init();
 	MX_I2C2_Init();
 	/* USER CODE BEGIN 2 */
-	MY_DSHOT_Init();
-	MY_SCPI_Init();
-	MY_ICM20948_Init();
 	/* USER CODE END 2 */
 
+	/* Init scheduler */
+	osKernelInitialize(); /* Call init function for freertos objects (in freertos.c) */
+	MX_FREERTOS_Init();
+
+	/* Start scheduler */
+	osKernelStart();
+
+	/* We should never get here as control is now taken by the scheduler */
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	uint8_t rxData[8];
-	memset(rxData, 0, 8);
-	int n = 0;
-	int m0 = 0;
-	int m1 = 0;
-	int m2 = 0;
-	int m3 = 0;
+
 	while (1)
 	{
-		if (n > 2000)
-		{
-			m0 = 300;
-			m1 = 300;
-			m2 = 300;
-			m3 = 300;
-		}
-
-		//DShot_Write(&DShot_HandleStruct[0], m0);
-		//DShot_Write(&DShot_HandleStruct[1], m1);
-		//DShot_Write(&DShot_HandleStruct[2], m2);
-		//DShot_Write(&DShot_HandleStruct[3], m3);
 		HAL_Delay(1);
 		/* USER CODE END WHILE */
-
 		/* USER CODE BEGIN 3 */
-		uint16_t bytesAvailable = CDC_GetRxBufferBytesAvailable_FS();
-		if (bytesAvailable > 0)
-		{
-			uint16_t bytesToRead = bytesAvailable >= 8 ? 8 : bytesAvailable;
-			if (CDC_ReadRxBuffer_FS(rxData, bytesToRead)
-					== USB_CDC_RX_BUFFER_OK)
-			{
-				MY_SCPI_Receive(rxData, bytesToRead);
-				//while (CDC_Transmit_FS(rxData, bytesToRead) == USBD_BUSY);
-			}
-		}
-		n++;
 	}
 	/* USER CODE END 3 */
 }
@@ -205,29 +176,30 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void MY_DSHOT_Init(void)
-{
-	// MOTOR 1 (PA3) - TIM5 Channel 4, DMA1 Stream 3
-	DShot_HandleStruct[0].Init.TIMInstance = &htim3;
-	DShot_HandleStruct[0].Init.TIMChannel = TIM_CHANNEL_1;
-	DShot_Init(&DShot_HandleStruct[0], DSHOT600);
 
-	// MOTOR 2 (PA2) - TIM2 Channel 3, DMA1 Stream 1
-	DShot_HandleStruct[1].Init.TIMInstance = &htim3;
-	DShot_HandleStruct[1].Init.TIMChannel = TIM_CHANNEL_2;
-	DShot_Init(&DShot_HandleStruct[1], DSHOT600);
-
-	// MOTOR 3 (PA0) - TIM2 Channel 1, DMA1 Stream 5
-	DShot_HandleStruct[2].Init.TIMInstance = &htim3;
-	DShot_HandleStruct[2].Init.TIMChannel = TIM_CHANNEL_3;
-	DShot_Init(&DShot_HandleStruct[2], DSHOT600);
-
-	// MOTOR 4 (PA1) - TIM5 Channel 2, DMA1 Stream 4
-	DShot_HandleStruct[3].Init.TIMInstance = &htim3;
-	DShot_HandleStruct[3].Init.TIMChannel = TIM_CHANNEL_4;
-	DShot_Init(&DShot_HandleStruct[3], DSHOT600);
-}
 /* USER CODE END 4 */
+
+/**
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM6 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	/* USER CODE BEGIN Callback 0 */
+
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM6)
+	{
+		HAL_IncTick();
+	}
+	/* USER CODE BEGIN Callback 1 */
+
+	/* USER CODE END Callback 1 */
+}
 
 /**
  * @brief  This function is executed in case of error occurrence.
