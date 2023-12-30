@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "i2c.h"
 #include "tim.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -27,10 +28,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "myscpi.h"
+#include "sensor.h"
 #include "dshot/dshot.h"
 #include "usbd_cdc_if.h"
-#include "Icm20948.h"
-#include "Ak0991x.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,16 +96,17 @@ int main(void)
 	MX_DMA_Init();
 	MX_USB_DEVICE_Init();
 	MX_TIM3_Init();
+	MX_I2C2_Init();
 	/* USER CODE BEGIN 2 */
 	MY_DSHOT_Init();
 	MY_SCPI_Init();
-
-	uint8_t rxData[8];
-	memset(rxData, 0, 8);
+	MY_ICM20948_Init();
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+	uint8_t rxData[8];
+	memset(rxData, 0, 8);
 	int n = 0;
 	int m0 = 0;
 	int m1 = 0;
@@ -121,10 +122,10 @@ int main(void)
 			m3 = 300;
 		}
 
-		DShot_Write(&DShot_HandleStruct[0], m0);
-		DShot_Write(&DShot_HandleStruct[1], m1);
-		DShot_Write(&DShot_HandleStruct[2], m2);
-		DShot_Write(&DShot_HandleStruct[3], m3);
+		//DShot_Write(&DShot_HandleStruct[0], m0);
+		//DShot_Write(&DShot_HandleStruct[1], m1);
+		//DShot_Write(&DShot_HandleStruct[2], m2);
+		//DShot_Write(&DShot_HandleStruct[3], m3);
 		HAL_Delay(1);
 		/* USER CODE END WHILE */
 
