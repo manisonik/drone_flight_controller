@@ -52,14 +52,18 @@ DShot_Handle_TypeDef DShot_HandleStruct[4];
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes =
-{ .name = "defaultTask", .stack_size = 128 * 4, .priority =
-		(osPriority_t) osPriorityNormal, };
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for ProcessCmdTask */
 osThreadId_t ProcessCmdTaskHandle;
-const osThreadAttr_t ProcessCmdTask_attributes =
-{ .name = "ProcessCmdTask", .stack_size = 128 * 4, .priority =
-		(osPriority_t) osPriorityNormal, };
+const osThreadAttr_t ProcessCmdTask_attributes = {
+  .name = "ProcessCmdTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -73,50 +77,47 @@ extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
-	/* USER CODE BEGIN Init */
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
 	MY_DSHOT_Init();
 	MY_SCPI_Init();
 	MY_ICM20948_Init();
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* USER CODE BEGIN RTOS_MUTEX */
+  /* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
-	/* USER CODE END RTOS_MUTEX */
+  /* USER CODE END RTOS_MUTEX */
 
-	/* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
-	/* USER CODE END RTOS_SEMAPHORES */
+  /* USER CODE END RTOS_SEMAPHORES */
 
-	/* USER CODE BEGIN RTOS_TIMERS */
+  /* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
-	/* USER CODE END RTOS_TIMERS */
+  /* USER CODE END RTOS_TIMERS */
 
-	/* USER CODE BEGIN RTOS_QUEUES */
+  /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
-	/* USER CODE END RTOS_QUEUES */
+  /* USER CODE END RTOS_QUEUES */
 
-	/* Create the thread(s) */
-	/* creation of defaultTask */
-	defaultTaskHandle = osThreadNew(StartDefaultTask, NULL,
-			&defaultTask_attributes);
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-	/* creation of ProcessCmdTask */
-	ProcessCmdTaskHandle = osThreadNew(StartProcessCmdTask, NULL,
-			&ProcessCmdTask_attributes);
+  /* creation of ProcessCmdTask */
+  ProcessCmdTaskHandle = osThreadNew(StartProcessCmdTask, NULL, &ProcessCmdTask_attributes);
 
-	/* USER CODE BEGIN RTOS_THREADS */
+  /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
-	/* USER CODE END RTOS_THREADS */
+  /* USER CODE END RTOS_THREADS */
 
-	/* USER CODE BEGIN RTOS_EVENTS */
+  /* USER CODE BEGIN RTOS_EVENTS */
 	/* add events, ... */
-	/* USER CODE END RTOS_EVENTS */
+  /* USER CODE END RTOS_EVENTS */
 
 }
 
@@ -129,19 +130,32 @@ void MX_FREERTOS_Init(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-	/* init code for USB_DEVICE */
-	MX_USB_DEVICE_Init();
-	/* USER CODE BEGIN StartDefaultTask */
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
+  /* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
+	int c = 0;
 	for (;;)
 	{
-		//DShot_Write(&DShot_HandleStruct[0], m0);
-		//DShot_Write(&DShot_HandleStruct[1], m1);
-		//DShot_Write(&DShot_HandleStruct[2], m2);
-		//DShot_Write(&DShot_HandleStruct[3], m3);
+		if (c > 5000)
+		{
+			//DShot_Write(&DShot_HandleStruct[0], 300);
+			//DShot_Write(&DShot_HandleStruct[1], 300);
+			//DShot_Write(&DShot_HandleStruct[2], 300);
+			//DShot_Write(&DShot_HandleStruct[3], 300);
+		}
+		else
+		{
+			DShot_Write(&DShot_HandleStruct[0], 0);
+			DShot_Write(&DShot_HandleStruct[1], 0);
+			DShot_Write(&DShot_HandleStruct[2], 0);
+			DShot_Write(&DShot_HandleStruct[3], 0);
+			c++;
+		}
+
 		osDelay(1);
 	}
-	/* USER CODE END StartDefaultTask */
+  /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_StartProcessCmdTask */
@@ -153,7 +167,7 @@ void StartDefaultTask(void *argument)
 /* USER CODE END Header_StartProcessCmdTask */
 void StartProcessCmdTask(void *argument)
 {
-	/* USER CODE BEGIN StartProcessCmdTask */
+  /* USER CODE BEGIN StartProcessCmdTask */
 	uint8_t rxData[8];
 	memset(rxData, 0, 8);
 
@@ -173,7 +187,7 @@ void StartProcessCmdTask(void *argument)
 		}
 		osDelay(1);
 	}
-	/* USER CODE END StartProcessCmdTask */
+  /* USER CODE END StartProcessCmdTask */
 }
 
 /* Private application code --------------------------------------------------*/
