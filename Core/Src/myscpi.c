@@ -17,15 +17,21 @@ scpi_result_t SCPI_Flush(scpi_t *context);
 scpi_result_t SCPI_IdnQ(scpi_t *context);
 scpi_result_t SCPI_Rst(scpi_t *context);
 
+scpi_result_t SCPI_Motor_All_On(scpi_t *context);
+scpi_result_t SCPI_Motor_All_Off(scpi_t *context);
+
 /* Variables */
 char scpi_input_buffer[SCPI_INPUT_BUFFER_LENGTH];
 scpi_error_t scpi_error_queue_data[SCPI_ERROR_QUEUE_SIZE];
 scpi_t scpi_context;
+bool allMotorsOn = FALSE;
 
 scpi_command_t scpi_commands[] =
 {
-	{ .pattern = "*IDN", .callback = SCPI_IdnQ, },
+	{ .pattern = "*IDN?", .callback = SCPI_IdnQ, },
 	{ .pattern = "*RST", .callback = SCPI_Rst, },
+	{ .pattern = "MOTOR:ALL:ON", .callback = SCPI_Motor_All_On },
+	{ .pattern = "MOTOR:ALL:OFF", .callback = SCPI_Motor_All_Off },
 	SCPI_CMD_LIST_END
 };
 
@@ -55,18 +61,32 @@ void MY_SCPI_Receive(uint8_t* recv, int len)
 	SCPI_Input(&scpi_context, (char*)recv, len);
 }
 
+scpi_result_t SCPI_Motor_All_On(scpi_t *context)
+{
+	(void) context;
+	allMotorsOn = TRUE;
+	return SCPI_RES_OK;
+}
+
+scpi_result_t SCPI_Motor_All_Off(scpi_t *context)
+{
+	(void) context;
+	allMotorsOn = FALSE;
+	return SCPI_RES_OK;
+}
+
 scpi_result_t SCPI_IdnQ(scpi_t *context)
 {
 	(void) context;
 
-	return 0;
+	return SCPI_RES_OK;
 }
 
 scpi_result_t SCPI_Rst(scpi_t *context)
 {
 	(void) context;
 
-	return 0;
+	return SCPI_RES_OK;
 }
 
 size_t SCPI_Write(scpi_t *context, const char *data, size_t len)
@@ -80,7 +100,7 @@ scpi_result_t SCPI_Flush(scpi_t *context)
 {
 	(void) context;
 
-	const char txData[] = "Hello World!\n";
+	const char txData[] = "\n";
 	while (CDC_Transmit_FS((uint8_t*)txData, strlen(txData)) == USBD_BUSY);
 
 	return SCPI_RES_OK;

@@ -49,13 +49,14 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 DShot_Handle_TypeDef DShot_HandleStruct[4];
+extern bool allMotorsOn;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for ProcessCmdTask */
 osThreadId_t ProcessCmdTaskHandle;
@@ -86,6 +87,7 @@ void MX_FREERTOS_Init(void) {
 	MY_DSHOT_Init();
 	MY_SCPI_Init();
 	MY_ICM20948_Init();
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -134,15 +136,15 @@ void StartDefaultTask(void *argument)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	int c = 0;
 	for (;;)
 	{
-		if (c > 5000)
+		if (allMotorsOn)
 		{
-			//DShot_Write(&DShot_HandleStruct[0], 300);
-			//DShot_Write(&DShot_HandleStruct[1], 300);
-			//DShot_Write(&DShot_HandleStruct[2], 300);
-			//DShot_Write(&DShot_HandleStruct[3], 300);
+			// Turn-on and Idle motors
+			DShot_Write(&DShot_HandleStruct[0], 300);
+			DShot_Write(&DShot_HandleStruct[1], 300);
+			DShot_Write(&DShot_HandleStruct[2], 300);
+			DShot_Write(&DShot_HandleStruct[3], 300);
 		}
 		else
 		{
@@ -150,9 +152,7 @@ void StartDefaultTask(void *argument)
 			DShot_Write(&DShot_HandleStruct[1], 0);
 			DShot_Write(&DShot_HandleStruct[2], 0);
 			DShot_Write(&DShot_HandleStruct[3], 0);
-			c++;
 		}
-
 		osDelay(1);
 	}
   /* USER CODE END StartDefaultTask */
@@ -182,10 +182,9 @@ void StartProcessCmdTask(void *argument)
 					== USB_CDC_RX_BUFFER_OK)
 			{
 				MY_SCPI_Receive(rxData, bytesToRead);
-				//while (CDC_Transmit_FS(rxData, bytesToRead) == USBD_BUSY);
 			}
 		}
-		osDelay(1);
+		osDelay(100);
 	}
   /* USER CODE END StartProcessCmdTask */
 }

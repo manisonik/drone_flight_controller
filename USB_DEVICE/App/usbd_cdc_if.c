@@ -7,13 +7,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -23,7 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "scpi/scpi.h"
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,9 +98,6 @@ uint8_t lcBuffer[7]; // Line coding buffer
 uint8_t rxBuffer[HL_RX_BUFFER_SIZE]; // Receive buffer
 volatile uint16_t rxBufferHeadPos = 0; // Receive buffer write position
 volatile uint16_t rxBufferTailPos = 0; // Receive buffer read position
-//uint8_t buf[7];
-//uint8_t receive_buffer[64];
-//scpi_t scpi_context;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -116,6 +112,7 @@ volatile uint16_t rxBufferTailPos = 0; // Receive buffer read position
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
+
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -236,25 +233,26 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-    	lcBuffer[0] = pbuf[0];
-    	lcBuffer[1] = pbuf[1];
-    	lcBuffer[2] = pbuf[2];
-    	lcBuffer[3] = pbuf[3];
-    	lcBuffer[4] = pbuf[4];
-    	lcBuffer[5] = pbuf[5];
-    	lcBuffer[6] = pbuf[6];
+	lcBuffer[0] = pbuf[0];
+	lcBuffer[1] = pbuf[1];
+	lcBuffer[2] = pbuf[2];
+	lcBuffer[3] = pbuf[3];
+	lcBuffer[4] = pbuf[4];
+	lcBuffer[5] = pbuf[5];
+	lcBuffer[6] = pbuf[6];
     break;
-	case CDC_GET_LINE_CODING:
-		pbuf[0] = lcBuffer[0];
-		pbuf[1] = lcBuffer[1];
-		pbuf[2] = lcBuffer[2];
-		pbuf[3] = lcBuffer[3];
-		pbuf[4] = lcBuffer[4];
-		pbuf[5] = lcBuffer[5];
-		pbuf[6] = lcBuffer[6];
 
-    	// Get line coding is invoked when the host connects, clear the RxBuffer when this occurs
-    	CDC_FlushRxBuffer_FS();
+    case CDC_GET_LINE_CODING:
+	pbuf[0] = lcBuffer[0];
+	pbuf[1] = lcBuffer[1];
+	pbuf[2] = lcBuffer[2];
+	pbuf[3] = lcBuffer[3];
+	pbuf[4] = lcBuffer[4];
+	pbuf[5] = lcBuffer[5];
+	pbuf[6] = lcBuffer[6];
+
+	// Get line coding is invoked when the host connects, clear the RxBuffer when this occurs
+	CDC_FlushRxBuffer_FS();
     break;
 
     case CDC_SET_CONTROL_LINE_STATE:
@@ -306,7 +304,6 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 
   rxBufferHeadPos = tempHeadPos;
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-
   return (USBD_OK);
   /* USER CODE END 6 */
 }
