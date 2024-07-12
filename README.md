@@ -1,4 +1,4 @@
-# drone_flight_controller
+# Drone Flight Controller
 Drone flight controller using STM32 microcontrollers.
 
 Project depends on the SmartMotion SDK from Invensense TDK.
