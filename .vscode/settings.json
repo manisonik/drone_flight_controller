@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "usbd_cdc.h": "c",
+        "usb_device.h": "c",
+        "stm32f756xx.h": "c",
+        "format.h": "c",
+        "usbd_cdc_if.h": "c",
+        "main.h": "c",
+        "freertos.h": "c"
+    }
+}

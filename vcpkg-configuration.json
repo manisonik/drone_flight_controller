@@ -1,0 +1,20 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "baseline": "cacf5994341f27e9a14a7b8724b0634b138ecb30",
+    "repository": "https://github.com/microsoft/vcpkg"
+  },
+  "registries": [
+    {
+      "kind": "artifact",
+      "location": "https://github.com/microsoft/vcpkg-ce-catalog/archive/refs/heads/main.zip",
+      "name": "microsoft"
+    },
+    {
+      "kind": "git",
+      "repository": "https://github.com/manisonik/vcpkg-registry",
+      "baseline": "5b14e6542a26001b4ef956f559ac64149ebd0479",
+      "packages": [ "dcel", "scpi" ]
+    }
+  ]
+}
